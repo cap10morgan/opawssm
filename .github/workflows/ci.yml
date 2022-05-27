@@ -31,7 +31,11 @@ jobs:
       # Windows man...
       - name: Install scoop (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
-        uses: sharpninja/install-scoop-action@master
+        shell: powershell
+        run: |
+          iwr get.scoop.sh -outfile 'install.ps1'
+          .\install.ps1 -RunAsAdmin
+          Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
       - name: Install MS build tools (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
         shell: powershell
