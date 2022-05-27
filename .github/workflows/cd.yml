@@ -42,41 +42,24 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       # macOS & Linux
-      - name: Setup Clojure
+      - name: Setup Clojure (macOS & Linux)
         if: ${{ matrix.os != 'windows-latest' }}
         uses: DeLaGuardo/setup-clojure@5.1
         with:
           cli: 1.11.1.1113
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build binary
-        if: ${{ matrix.os != 'windows-latest' }}
-        run: clojure -T:build native-image
 
       # Windows man...
-      - name: Install scoop
+      - name: Setup Clojure (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
-        uses: MinoruSekine/setup-scoop@v1
-      - name: Install MS build tools
-        if: ${{ matrix.os == 'windows-latest' }}
-        shell: powershell
         run: |
-          choco install -y visualstudio2022-workload-vctools
-      - name: Setup Clojure
-        if: ${{ matrix.os == 'windows-latest' }}
-        shell: powershell
-        run: |
-          # workaround a scoop bug: https://github.com/ScoopInstaller/Scoop/issues/4917
-          scoop bucket rm main
-          scoop bucket add main
-          
-          scoop bucket add scoop-clojure https://github.com/littleli/scoop-clojure
-          scoop install clojure
+          PowerShell -Command "iwr -useb https://raw.githubusercontent.com/borkdude/deps.clj/master/install.ps1 | iex"
+          Rename-Item $HOME\deps.clj\deps.exe clojure.exe
+          echo "$HOME\deps.clj" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append 
+
       - name: Build binary
-        if: ${{ matrix.os == 'windows-latest' }}
         shell: cmd
-        run: |
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
-          cmd-clojure -T:build native-image
+        run: clojure -T:build native-image
 
       # All platforms
       - name: Upload release assets
