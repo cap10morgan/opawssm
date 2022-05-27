@@ -19,31 +19,31 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       # macOS & Linux
-      - name: Setup Clojure
+      - name: Setup Clojure (macOS & Linux)
         if: ${{ matrix.os != 'windows-latest' }}
         uses: DeLaGuardo/setup-clojure@5.1
         with:
           cli: 1.11.1.1113
-      - name: Build binary
+      - name: Build binary (macOS & Linux)
         if: ${{ matrix.os != 'windows-latest' }}
         run: clojure -T:build native-image
 
       # Windows man...
-      - name: Install scoop
+      - name: Install scoop (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
-        uses: MinoruSekine/setup-scoop@v1
-      - name: Install MS build tools
+        uses: sharpninja/install-scoop-action@master
+      - name: Install MS build tools (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
         shell: powershell
         run: |
           choco install -y visualstudio2022-workload-vctools
-      - name: Setup Clojure
+      - name: Setup Clojure (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
         shell: powershell
         run: |
           scoop bucket add scoop-clojure https://github.com/littleli/scoop-clojure
           scoop install clojure
-      - name: Build binary
+      - name: Build binary (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
         shell: cmd
         run: |
