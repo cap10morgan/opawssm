@@ -10,17 +10,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3.0.2
-      - name: Setup Java
-        uses: actions/setup-java@v3.3.0
-        with:
-          distribution: temurin
-          java-version: 17
-      - name: Setup Clojure
+      - name: Setup GraalVM
         uses: DeLaGuardo/setup-graalvm@5.0
         with:
           graalvm: 22.1.0
           java: java17
       - name: Setup native-image
         run: gu install native-image
+      - name: Setup Clojure
+        uses: DeLaGuardo/setup-clojure@5.1
+        with:
+          cli: 1.11.1.1113
       - name: Build binary
         run: clojure -T:build native-image
