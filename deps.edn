@@ -1,0 +1,16 @@
+{:paths ["src" "resources"]
+
+ :deps  {org.clojure/tools.cli       {:mvn/version "1.0.206"}
+         org.clojure/core.async      {:mvn/version "1.5.648"}
+         org.clojure/tools.logging   {:mvn/version "1.2.4"}
+         org.clojure/data.xml        {:mvn/version "0.2.0-alpha6"}
+         cheshire/cheshire           {:mvn/version "5.10.2"}
+         com.cognitect.aws/api       {:mvn/version "0.8.539"}
+         com.cognitect.aws/endpoints {:mvn/version "1.1.12.206"}
+         com.cognitect.aws/sts       {:mvn/version "822.2.1109.0"}
+         com.cognitect.aws/iam       {:mvn/version "821.2.1107.0"}}
+
+ :aliases
+ {:build
+  {:deps       {io.github.clojure/tools.build {:git/tag "v0.8.2" :git/sha "ba1a2bf"}}
+   :ns-default build}}}
