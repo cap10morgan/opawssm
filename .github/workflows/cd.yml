@@ -13,7 +13,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3.0.2
       - id: vars
-        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+        run: |
+          echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+          echo ::set-output name=version::${GITHUB_REF#refs/*/v}
       - name: create release
         id: create-release
         uses: actions/create-release@v1
@@ -27,7 +29,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - name: Checkout
         uses: actions/checkout@v3.0.2
@@ -38,12 +40,41 @@ jobs:
           java-version: 17
           components: native-image
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # macOS & Linux
       - name: Setup Clojure
+        if: ${{ matrix.os != 'windows-latest' }}
         uses: DeLaGuardo/setup-clojure@5.1
         with:
           cli: 1.11.1.1113
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build binary
+        if: ${{ matrix.os != 'windows-latest' }}
         run: clojure -T:build native-image
+
+      # Windows man...
+      - name: Install scoop
+        if: ${{ matrix.os == 'windows-latest' }}
+        uses: MinoruSekine/setup-scoop@v1
+      - name: Install MS build tools
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: powershell
+        run: |
+          choco install -y visualstudio2022-workload-vctools
+      - name: Setup Clojure
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: powershell
+        run: |
+          scoop bucket add scoop-clojure https://github.com/littleli/scoop-clojure
+          scoop install clojure
+      - name: Build binary
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: cmd
+        run: |
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
+          cmd-clojure -T:build native-image
+
+      # All platforms
       - name: Upload release assets
         if: success()
         id: upload-release-assets
@@ -52,4 +83,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: targets/version something something...
+          asset_path: targets/${{ steps.vars.outputs.version }}
