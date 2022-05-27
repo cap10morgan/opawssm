@@ -1,0 +1,26 @@
+name: CI
+on: push
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.0.2
+      - name: Setup Java
+        uses: actions/setup-java@v3.3.0
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Setup Clojure
+        uses: DeLaGuardo/setup-graalvm@5.0
+        with:
+          graalvm: 22.1.0
+          java: java17
+      - name: Setup native-image
+        run: gu install native-image
+      - name: Build binary
+        run: clojure -T:build native-image
