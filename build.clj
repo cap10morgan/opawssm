@@ -13,7 +13,8 @@
                  System/getProperty
                  str/lower-case
                  (str/replace #"\s+" "-")
-                 (str/replace #"-\d+$" "")))
+                 (str/replace #"-\d+$" "")
+                 (str/replace #"-server" "")))
 (def os-arch (let [arch (System/getProperty "os.arch")]
                (case arch
                  "x86_64" "amd64"
