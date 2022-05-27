@@ -11,7 +11,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3.0.2
       - name: Setup GraalVM
-        uses: DeLaGuardo/setup-graalvm@v1
+        uses: graalvm/setup-graalvm@v1
         with:
           version: 22.1.0
           java-version: 17
