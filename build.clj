@@ -14,7 +14,11 @@
                  str/lower-case
                  (str/replace #"\s+" "-")
                  (str/replace #"-\d+$" "")))
-(def os-arch (System/getProperty "os.arch"))
+(def os-arch (let [arch (System/getProperty "os.arch")]
+               (case arch
+                 "x86_64" "amd64"
+                 "aarch64" "arm64"
+                 arch)))
 (def native-image-path (str/join File/separator ["target" version
                                                  (str os-name "-" os-arch)
                                                  "opawssm"]))
@@ -35,16 +39,16 @@
 
 (defn uberjar [_]
   (clean nil)
-  (b/copy-dir {:src-dirs ["src" "resources"]
+  (b/copy-dir {:src-dirs   ["src" "resources"]
                :target-dir class-dir})
-  (b/compile-clj {:basis basis
-                  :src-dirs ["src"]
-                  :class-dir class-dir
+  (b/compile-clj {:basis        basis
+                  :src-dirs     ["src"]
+                  :class-dir    class-dir
                   :compile-opts {:direct-linking true}})
   (b/uber {:class-dir class-dir
            :uber-file jar-file
-           :basis basis
-           :main main}))
+           :basis     basis
+           :main      main}))
 
 (defn native-image [_]
   (println "Building opawssm for" (str os-name "/" os-arch))
@@ -60,8 +64,8 @@
                  (str "-H:Name=" native-image-path)]})))
 
 (defn native-image-docker [{:keys [arch]}]
-  (let [arch (if (= "arm64" arch) "aarch64" arch)
-        dir (str/join File/separator ["target" version (str "linux-" arch)])]
+  (let [arch (if (= "aarch64" arch) "arm64" arch)
+        dir  (str/join File/separator ["target" version (str "linux-" arch)])]
     (b/process {:command-args
                 ["docker" "buildx" "build" (str "--platform=linux/" arch)
                  (str "--build-arg=CLJ_VERSION=" docker-clojure-version)
@@ -82,5 +86,5 @@
 
 (defn all [_]
   (native-image nil)
-  (native-image-docker {:arch "aarch64"})
+  (native-image-docker {:arch "arm64"})
   (native-image-docker {:arch "amd64"}))
