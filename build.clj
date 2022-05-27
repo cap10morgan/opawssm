@@ -48,8 +48,6 @@
 
 (defn native-image [_]
   (println "Building opawssm for" (str os-name "/" os-arch))
-  (println "PATH:" (System/getenv "PATH"))
-  (println "JAVA_HOME:" (System/getenv "JAVA_HOME"))
   (uberjar nil)
   (io/make-parents native-image-path)
   (let [java-home (System/getenv "JAVA_HOME")]
