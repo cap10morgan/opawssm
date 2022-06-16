@@ -5,7 +5,8 @@
          org.clojure/tools.logging   {:mvn/version "1.2.4"}
          org.clojure/data.xml        {:mvn/version "0.2.0-alpha6"}
          cheshire/cheshire           {:mvn/version "5.10.2"}
-         com.cognitect.aws/api       {:mvn/version "0.8.539"}
+         com.grzm/awyeah-api         {:git/url "https://github.com/grzm/awyeah-api"
+                                      :git/sha "a3ce8c515c3c381fa46efea37ec680631641f52b"}
          com.cognitect.aws/endpoints {:mvn/version "1.1.12.206"}
          com.cognitect.aws/sts       {:mvn/version "822.2.1109.0"}
          com.cognitect.aws/iam       {:mvn/version "821.2.1107.0"}}

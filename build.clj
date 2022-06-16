@@ -20,9 +20,11 @@
                  "x86_64" "amd64"
                  "aarch64" "arm64"
                  arch)))
-(def native-image-path (str/join File/separator ["target" version
-                                                 (str os-name "-" os-arch)
-                                                 "opawssm"]))
+(defn native-image-path
+  [& [os arch]]
+  (str/join File/separator ["target" version
+                            (str (or os os-name) "-" (or arch os-arch))
+                            "opawssm"]))
 (def docker-graal-version "22.1.0")
 (def docker-clojure-version "1.11.1.1113")
 
@@ -54,7 +56,7 @@
 (defn native-image [_]
   (println "Building opawssm for" (str os-name "/" os-arch))
   (uberjar nil)
-  (io/make-parents native-image-path)
+  (io/make-parents (native-image-path))
   (let [java-home (System/getenv "JAVA_HOME")]
     (b/process {:command-args
                 [(str/join File/separator [java-home "bin" native-image-bin])
@@ -62,28 +64,43 @@
                  "--initialize-at-build-time"
                  "--no-fallback" "-H:IncludeResources=.*"
                  "-H:ReflectionConfigurationFiles=resources/reflect-config.json"
-                 (str "-H:Name=" native-image-path)]})))
+                 (str "-H:Name=" (native-image-path))]})))
 
 (defn native-image-docker [{:keys [arch]}]
   (let [arch (if (= "aarch64" arch) "arm64" arch)
-        dir  (str/join File/separator ["target" version (str "linux-" arch)])]
+        path (native-image-path "linux" arch)]
     (b/process {:command-args
-                ["docker" "buildx" "build" (str "--platform=linux/" arch)
+                ["docker" "buildx" "build" "--progress=plain"
+                 (str "--platform=linux/" arch)
                  (str "--build-arg=CLJ_VERSION=" docker-clojure-version)
                  (str "--build-arg=GRAAL_VERSION=" docker-graal-version)
                  "--load" "-t" "opawssm-builder" "."]})
     (b/process {:command-args
                 ["docker" "rm" "-f" "opawssm-builder"]})
     (b/process {:command-args
+                ["docker" "create" (str "--platform=linux/" arch)
+                 "--name" "opawssm-builder" "opawssm-builder"
+                 "ls" "-la"]})
+    (b/process {:command-args
                 ["docker" "run" (str "--platform=linux/" arch)
-                 "--name" "opawssm-builder" "opawssm-builder"]})
-    (b/process {:command-args ["docker" "stop" "opawssm-builder"]})
-    (io/make-parents dir)
+                 "--rm" "opawssm-builder"
+                 "ls" "-la" "target"]})
+    (b/process {:command-args
+                ["docker" "run" (str "--platform=linux/" arch)
+                 "--rm" "opawssm-builder"
+                 "ls" "-la" "target/0.1.0"]})
+    (b/process {:command-args
+                ["docker" "run" (str "--platform=linux/" arch)
+                 "--rm" "opawssm-builder"
+                 "ls" "-la" "target/0.1.0/*/"]})
+    (io/make-parents path)
+    (b/process {:command-args
+                ["docker" "start" "-a" "opawssm-builder"]})
     (b/process {:command-args
                 ["docker" "cp"
-                 (str "opawssm-builder:/opawssm/" dir "/opawssm")
-                 (str dir "/opawssm")]})
-    (b/process {:command-args ["docker" "rm" "opawssm-builder"]})))
+                 (str "opawssm-builder:/opawssm/" path)
+                 path]})))
+    ;(b/process {:command-args ["docker" "rm" "opawssm-builder"]})))
 
 (defn all [_]
   (native-image nil)

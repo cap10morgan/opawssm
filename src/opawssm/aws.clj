@@ -1,15 +1,7 @@
 (ns opawssm.aws
-  (:require ;; these requires prevent dynamic loads at runtime that make GraalVM sad
-            [cognitect.aws.protocols.json]
-            [cognitect.aws.protocols.common]
-            [cognitect.aws.protocols.rest]
-            [cognitect.aws.protocols.rest-xml]
-            [cognitect.aws.protocols.query]
-            [cognitect.aws.http.cognitect :as http]
-            [cognitect.aws.sts.specs]
-            [clojure.spec.alpha]
-            [cognitect.aws.client.api :as aws]
-            [cognitect.aws.credentials :as aws-creds]
+  (:require [com.grzm.awyeah.client.api :as aws]
+            [com.grzm.awyeah.http.awyeah :as http]
+            [com.grzm.awyeah.credentials :as aws-creds]
             [opawssm.debug :refer [debug]]))
 
 (defn make-client
