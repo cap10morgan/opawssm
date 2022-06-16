@@ -56,7 +56,9 @@
 (defn native-image [_]
   (println "Building opawssm for" (str os-name "/" os-arch))
   (uberjar nil)
+  (println "Built uberjar")
   (io/make-parents (native-image-path))
+  (println "Created binary target dir")
   (let [java-home (System/getenv "JAVA_HOME")]
     (b/process {:command-args
                 [(str/join File/separator [java-home "bin" native-image-bin])
