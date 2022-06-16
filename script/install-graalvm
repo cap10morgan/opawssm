@@ -9,17 +9,10 @@ INSTALL_DIR="${1:-$HOME}"
 GRAALVM_VERSION="${GRAALVM_VERSION:-22.1.0}"
 JAVA_VERSION="${JAVA_VERSION:-17}"
 
-case "$BABASHKA_PLATFORM" in
-	macos)
-		GRAALVM_PLATFORM="darwin"
-		;;
-	linux)
-		GRAALVM_PLATFORM="linux"
-		;;
-esac
+GRAALVM_PLATFORM="$CIRRUS_OS"
 
-case "${BABASHKA_ARCH:-}" in
-	aarch64)
+case "${CIRRUS_ARCH:-}" in
+	arm64)
 		GRAALVM_ARCH="aarch64"
 		;;
 	*)
