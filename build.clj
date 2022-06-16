@@ -57,7 +57,9 @@
   (println "Building opawssm for" (str os-name "/" os-arch))
   (uberjar nil)
   (println "Built uberjar")
-  (io/make-parents (native-image-path))
+  (let [nip (native-image-path)]
+    (println "Building binary in" nip)
+    (io/make-parents nip))
   (println "Created binary target dir")
   (let [java-home (System/getenv "JAVA_HOME")]
     (b/process {:command-args
