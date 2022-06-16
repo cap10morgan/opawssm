@@ -59,13 +59,13 @@
   (uberjar nil)
   (println "Built uberjar")
   (let [nip (native-image-path)]
-    (println "Current working dir:" (:out (sh "pwd")))
     (println "Building binary in" nip)
     (io/make-parents nip)
     (println "Created binary target dir")
-    (let [java-home (System/getenv "JAVA_HOME")]
+    (let [ni-home (or (System/getenv "GRAALVM_HOME")
+                      (System/getenv "JAVA_HOME"))]
       (b/process {:command-args
-                  [(str/join File/separator [java-home "bin" native-image-bin])
+                  [(str/join File/separator [ni-home "bin" native-image-bin])
                    "-jar" jar-file
                    "--initialize-at-build-time"
                    "--no-fallback" "-H:IncludeResources=.*"
