@@ -26,7 +26,7 @@
                             (str (or os os-name) "-" (or arch os-arch))
                             "opawssm"]))
 (def docker-graal-version "22.1.0")
-(def docker-clojure-version "1.11.1.1113")
+(def docker-clojure-version "1.11.1.1129")
 
 (def windows?
   (some-> (System/getProperty "os.name")
