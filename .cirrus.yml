@@ -7,6 +7,7 @@ task:
     GRAALVM_VERSION: "22.1.0"
     GRAALVM_HOME: ${HOME}/graalvm-ce-java17-22.1.0/Contents/Home
   script: |
+    brew update
     brew install clojure
     script/install-graalvm
     export PATH=$GRAALVM_HOME/bin:$PATH
