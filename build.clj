@@ -1,7 +1,8 @@
 (ns build
   (:require [clojure.tools.build.api :as b]
             [clojure.string :as str]
-            [clojure.java.io :as io])
+            [clojure.java.io :as io]
+            [clojure.java.shell :refer [sh]])
   (:import (java.io File)))
 
 (def main 'opawssm.cli)
@@ -58,17 +59,18 @@
   (uberjar nil)
   (println "Built uberjar")
   (let [nip (native-image-path)]
+    (println "Current working dir:" (:out (sh "pwd")))
     (println "Building binary in" nip)
-    (io/make-parents nip))
-  (println "Created binary target dir")
-  (let [java-home (System/getenv "JAVA_HOME")]
-    (b/process {:command-args
-                [(str/join File/separator [java-home "bin" native-image-bin])
-                 "-jar" jar-file
-                 "--initialize-at-build-time"
-                 "--no-fallback" "-H:IncludeResources=.*"
-                 "-H:ReflectionConfigurationFiles=resources/reflect-config.json"
-                 (str "-H:Name=" (native-image-path))]})))
+    (io/make-parents nip)
+    (println "Created binary target dir")
+    (let [java-home (System/getenv "JAVA_HOME")]
+      (b/process {:command-args
+                  [(str/join File/separator [java-home "bin" native-image-bin])
+                   "-jar" jar-file
+                   "--initialize-at-build-time"
+                   "--no-fallback" "-H:IncludeResources=.*"
+                   "-H:ReflectionConfigurationFiles=resources/reflect-config.json"
+                   (str "-H:Name=" nip)]}))))
 
 (defn native-image-docker [{:keys [arch]}]
   (let [arch (if (= "aarch64" arch) "arm64" arch)
