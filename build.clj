@@ -1,8 +1,7 @@
 (ns build
   (:require [clojure.tools.build.api :as b]
             [clojure.string :as str]
-            [clojure.java.io :as io]
-            [clojure.java.shell :refer [sh]])
+            [clojure.java.io :as io])
   (:import (java.io File)))
 
 (def main 'opawssm.cli)
@@ -61,11 +60,11 @@
   (let [nip (native-image-path)]
     (println "Building binary in" nip)
     (io/make-parents nip)
-    (println "Created binary target dir")
     (let [ni-home (or (System/getenv "GRAALVM_HOME")
                       (System/getenv "JAVA_HOME"))]
       (b/process {:command-args
-                  [(str/join File/separator [ni-home "bin" native-image-bin])
+                  [#_(str/join File/separator [ni-home "bin" native-image-bin])
+                   native-image-bin
                    "-jar" jar-file
                    "--initialize-at-build-time"
                    "--no-fallback" "-H:IncludeResources=.*"
