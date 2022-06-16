@@ -1,0 +1,15 @@
+# For building macOS arm64 binaries until GitHub Actions supports it
+macos_instance:
+  image: ghcr.io/cirruslabs/macos-monterey-base:latest
+
+task:
+  env:
+    GRAALVM_VERSION: "22.1.0"
+    GRAALVM_HOME: ${HOME}/graalvm-ce-java17-22.1.0/Contents/Home
+  script: |
+    brew install clojure
+    script/install-graalvm
+    export PATH=$GRAALVM_HOME/bin:$PATH
+    clojure -T:build native-image
+  binaries_artifacts:
+    path: target/*/mac-os-x-arm64/opawssm
