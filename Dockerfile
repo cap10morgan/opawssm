@@ -17,6 +17,7 @@ RUN clojure -P && clojure -A:build -P
 
 COPY . .
 
-ENTRYPOINT [""]
+RUN clojure -T:build native-image
 
-CMD ["clojure", "-T:build", "native-image"]
+ENTRYPOINT [""]
+CMD [""]
