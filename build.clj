@@ -65,12 +65,10 @@
   (let [nip (native-image-path)]
     (println "Building binary in" nip)
     (io/make-parents nip)
-    (Thread/sleep 1000)
     (let [ni-home (or (System/getenv "GRAALVM_HOME")
                       (System/getenv "JAVA_HOME"))]
       (b/process {:command-args
-                  [#_(str/join File/separator [ni-home "bin" native-image-bin])
-                   native-image-bin
+                  [(str/join File/separator [ni-home "bin" native-image-bin])
                    "-jar" jar-file
                    "--initialize-at-build-time"
                    "--no-fallback" "-H:IncludeResources=.*"
