@@ -39,7 +39,7 @@
   [& [os arch]]
   (str/join File/separator ["target" version
                             (str (or os os-name) "-" (or arch os-arch))
-                            native-image-bin]))
+                            "opawssm"]))
 
 
 (defn clean [_]
