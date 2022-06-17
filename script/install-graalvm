@@ -31,7 +31,7 @@ if ! [ -d "graalvm-ce-java$JAVA_VERSION-$GRAALVM_VERSION" ]; then
 	ls -lah
 fi
 
-GRAALVM_HOME="$INSTALL_DIR/graalvm-ce-java$JAVA_VERSION-$GRAALVM_VERSION"
+GRAALVM_HOME="$INSTALL_DIR/graalvm-ce-java$JAVA_VERSION-$GRAALVM_VERSION/Contents/Home"
 
 ls -lah "$GRAALVM_HOME"
 
