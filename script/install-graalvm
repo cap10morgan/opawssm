@@ -30,9 +30,11 @@ if ! [ -d "graalvm-ce-java$JAVA_VERSION-$GRAALVM_VERSION" ]; then
 	tar xzf "$GRAALVM_FILENAME"
 fi
 
-if ! [ -e "graalvm-ce-java$JAVA_VERSION-$GRAALVM_VERSION/bin/native-image" ]; then
+GRAALVM_HOME="$INSTALL_DIR/graalvm-ce-java$JAVA_VERSION-$GRAALVM_VERSION"
+
+if ! [ -e "$GRAALVM_HOME/bin/native-image" ]; then
   echo "Installing native-image command..."
-  ./bin/gu install native-image
+  "$GRAALVM_HOME"/bin/gu install native-image
 fi
 
 popd >/dev/null
