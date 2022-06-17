@@ -4,29 +4,27 @@
             [clojure.java.io :as io])
   (:import (java.io File)))
 
-(def main 'opawssm.cli)
 (def version "0.1.0")
+(def docker-graal-version "22.1.0")
+(def docker-clojure-version "1.11.1.1129")
+
+(def main 'opawssm.cli)
 (def class-dir "target/classes")
 (def basis (b/create-basis {:project "deps.edn"}))
 (def jar-file (format "target/%s-%s.jar" "opawssm" version))
+
 (def os-name (-> "os.name"
                  System/getProperty
                  str/lower-case
                  (str/replace #"\s+" "-")
                  (str/replace #"-\d+$" "")
                  (str/replace #"-server" "")))
+
 (def os-arch (let [arch (System/getProperty "os.arch")]
                (case arch
                  "x86_64" "amd64"
                  "aarch64" "arm64"
                  arch)))
-(defn native-image-path
-  [& [os arch]]
-  (str/join File/separator ["target" version
-                            (str (or os os-name) "-" (or arch os-arch))
-                            "opawssm"]))
-(def docker-graal-version "22.1.0")
-(def docker-clojure-version "1.11.1.1129")
 
 (def windows?
   (some-> (System/getProperty "os.name")
@@ -36,6 +34,13 @@
 (def native-image-bin
   (cond-> "native-image"
           windows? (str ".cmd")))
+
+(defn native-image-path
+  [& [os arch]]
+  (str/join File/separator ["target" version
+                            (str (or os os-name) "-" (or arch os-arch))
+                            native-image-bin]))
+
 
 (defn clean [_]
   (b/delete {:path "target"}))
@@ -60,6 +65,7 @@
   (let [nip (native-image-path)]
     (println "Building binary in" nip)
     (io/make-parents nip)
+    (Thread/sleep 1000)
     (let [ni-home (or (System/getenv "GRAALVM_HOME")
                       (System/getenv "JAVA_HOME"))]
       (b/process {:command-args
