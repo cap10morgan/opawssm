@@ -33,6 +33,8 @@ fi
 
 GRAALVM_HOME="$INSTALL_DIR/graalvm-ce-java$JAVA_VERSION-$GRAALVM_VERSION"
 
+ls -lah "$GRAALVM_HOME"
+
 if ! [ -e "$GRAALVM_HOME/bin/native-image" ]; then
   echo "Installing native-image command..."
   "$GRAALVM_HOME"/bin/gu install native-image
