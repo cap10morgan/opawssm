@@ -4,6 +4,8 @@
             [clojure.string :as str]
             [opawssm.debug :refer [debug]]))
 
+(set! *warn-on-reflection* true)
+
 (defn- run-command
   [& args]
   (let [[args json?] (if (= :raw (last args))
