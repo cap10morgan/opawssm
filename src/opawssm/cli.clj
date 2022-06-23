@@ -85,9 +85,14 @@
 (defn exec
   [arguments {:keys [account vault tag] :as options} command]
   (let [item-name         (first arguments)
+        op-list-items     (if account
+                            #(op/list-items :accounts [account] :tags [%])
+                            #(op/list-items :tags [%]))
         op-item-name      (or item-name
-                              (->> tag (conj []) (op/list-items :tags) first :title))
-        op-creds-item     (op/get-item op-item-name)
+                              (-> tag op-list-items first :title))
+        op-creds-item     (if account
+                            (op/get-item account op-item-name)
+                            (op/get-item op-item-name))
         _                 (when op-creds-item
                             (debug "\nFound 1Password item:" op-item-name))
         _                 (debug "\n1Password item details:"
@@ -192,4 +197,7 @@
                    (exec arguments options command)
                    (shutdown-agents)
                    (exit 0 ""))
-          "login" (println "\nOpening the web console!"))))))
+          "login" (println "\nOpening the web console!")
+          (do
+            (println "Unknown action" action)))))))
+
