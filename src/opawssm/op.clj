@@ -57,7 +57,10 @@
 (defn get-item
   ([name] (get-item nil name))
   ([account name]
-   (let [command ["item" "get" name "--account" account]
+   (let [base-command ["item" "get" name]
+         command      (if account
+                        (concat base-command ["--account" account])
+                        base-command)
          {:keys [result error status]} (apply run-command command)]
      (if result
        result
