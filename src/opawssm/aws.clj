@@ -1,5 +1,7 @@
 (ns opawssm.aws
-  (:require [com.grzm.awyeah.client.api :as aws]
+  (:require [com.grzm.awyeah.protocols.query]
+            [cognitect.aws.sts.specs]
+            [com.grzm.awyeah.client.api :as aws]
             [com.grzm.awyeah.http.awyeah :as http]
             [com.grzm.awyeah.credentials :as aws-creds]
             [opawssm.debug :refer [debug]]))

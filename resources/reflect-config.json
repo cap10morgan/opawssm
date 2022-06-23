@@ -1,3 +1,6 @@
 [
-  {"name": "[Ljava.nio.HeapByteBuffer;"}
+  {"name": "jdk.internal.net.http.HttpRequestBuilderImpl",
+   "methods": [
+     {"name": "build"}
+   ]}
 ]
