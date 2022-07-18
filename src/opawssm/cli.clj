@@ -173,13 +173,14 @@
     (when-let [error (:error temp-creds)]
       (exit 1 (:Message error)))
     (debug "\nRunning" command)
-    (let [^Instant expiry (.toInstant ^Date (:Expiration temp-creds))]
+    (let [^Instant expiry (.toInstant ^Date (:Expiration temp-creds))
+          env             (into {} (System/getenv))]
       (with-sh-env
-        {"AWS_ACCESS_KEY_ID"      (:AccessKeyId temp-creds)
-         "AWS_SECRET_ACCESS_KEY"  (:SecretAccessKey temp-creds)
-         "AWS_SESSION_TOKEN"      (:SessionToken temp-creds)
-         "AWS_SECURITY_TOKEN"     (:SessionToken temp-creds)
-         "AWS_SESSION_EXPIRATION" (.toString expiry)}
+        (merge env {"AWS_ACCESS_KEY_ID"      (:AccessKeyId temp-creds)
+                    "AWS_SECRET_ACCESS_KEY"  (:SecretAccessKey temp-creds)
+                    "AWS_SESSION_TOKEN"      (:SessionToken temp-creds)
+                    "AWS_SECURITY_TOKEN"     (:SessionToken temp-creds)
+                    "AWS_SESSION_EXPIRATION" (.toString expiry)})
         (let [{:keys [out err] :as result} (apply sh command)]
           (if (zero? (:exit result))
             (println out)
