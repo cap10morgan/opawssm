@@ -41,21 +41,12 @@ jobs:
           components: native-image
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      # macOS & Linux
-      - name: Setup Clojure (macOS & Linux)
-        if: ${{ matrix.os != 'windows-latest' }}
-        uses: DeLaGuardo/setup-clojure@5.1
+      - name: Setup Clojure
+        uses: DeLaGuardo/setup-clojure@8.0
         with:
-          cli: 1.11.1.1113
+          cli: 1.11.1.1149
+          cmd-exe-workaround: 'latest'
           github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      # Windows man...
-      - name: Setup Clojure (Windows)
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: |
-          PowerShell -Command "iwr -useb https://raw.githubusercontent.com/borkdude/deps.clj/master/install.ps1 | iex"
-          Rename-Item $HOME\deps.clj\deps.exe clojure.exe
-          echo "$HOME\deps.clj" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append 
 
       - name: Build binary
         shell: cmd
